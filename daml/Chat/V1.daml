@@ -42,11 +42,11 @@ template UserSession
           optUser <- lookupByKey @User userKey
           case (optUserInvitation, optUser) of
             (None, None) -> do
-              (opCid, _) <- fetchByKey @Operator operator
+              (opCid, _) <- fetchByKey @Operator operator {- What is the meaning of (opCid,_) -}
               userInvitationCid <- exercise opCid OperatorInviteUser with ..
-              return $ Left userInvitationCid
+              return $ Left userInvitationCid   {- What is the meaning of return $ -}
             (Some userInvitationCid, _) -> return $ Left userInvitationCid
-            (_, Some userCid) -> return $ Right userCid
+            (_, Some userCid) -> return $ Right userCid  {- What is the meaning of (_, Some userCid) -}
 
       UserSessionReject : ()
         do return ()
@@ -115,7 +115,7 @@ template User
         do
           optAliasCid <- lookupByKey @SelfAlias (operator, user)
           case optAliasCid of
-            Some cid | alias /= "" -> do
+            Some cid | alias /= "" -> do   {- What is the meaning of Some -}
                 newCid <- exercise cid SelfAliasRename with newAlias = alias
                 return $ Some newCid
             Some cid | alias == "" -> do
@@ -162,7 +162,7 @@ template AddressBook
   with
     operator : Party
     user : Party
-    contacts : Map Party Text
+    contacts : Map Party Text  {- What is the meaning of Map Party Text -}
   where
     signatory user
 
@@ -318,8 +318,8 @@ template Chat
         postedAt : Text
       controller poster
       do
-        assert (elem poster members)
-        create Message with sender = poster, recipients = dedup $ chatSignatory :: members, ..
+        assert (elem poster members)  {- What is the meaning of elem poster members -}
+        create Message with sender = poster, recipients = dedup $ chatSignatory :: members, .. {- What is the meaning of dedup $ chatSignatory :: members, ..-}
 
     choice ChatAddMembers : ContractId Chat
       with
@@ -362,7 +362,7 @@ template Chat
           slackChannelId : Text
         do
           optForwardToSlack <- lookupByKey @ForwardToSlack (operator, creator, chatId)
-          case optForwardToSlack of
+          case optForwardToSlack of    {- What is the meaning of of this case block -}
             Some cid | slackChannelId /= "" -> do
                 newCid <- exercise cid ForwardToSlackUpdateChannel
                   with newSlackChannelId = slackChannelId
@@ -373,4 +373,4 @@ template Chat
             None | slackChannelId /= "" -> do
               cid <- create ForwardToSlack with user = creator, ..
               return $ Some cid
-            _ -> return None
+            _ -> return None  {- What is the meaning of _ -> return none -}
